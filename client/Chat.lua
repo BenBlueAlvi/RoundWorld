@@ -27,6 +27,13 @@ function Chat:update()
 			if k == 'space' then
 				new = ' '
 			end
+			if k == 'lshift' or k == 'rshift' then
+				new = ''
+			end
+			if love.keyboard.shift then
+				new = string.upper(new)
+			end
+			
 			self.typeLine = self.typeLine .. new
 		
 		end

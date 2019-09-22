@@ -13,7 +13,7 @@ VIRTUAL_WIDTH = 432
 VIRTUAL_HEIGHT = 243
 
 
-CLIENT = Client("127.0.0.1", 7777)
+CLIENT = Client("192.168.0.12", 7777)
 
 love.physics.setMeter(32)
 WORLD = love.physics.newWorld(0, 9.8 * 32, true) 
@@ -95,7 +95,17 @@ end
 function love.keypressed(key)
 	love.keyboard.keysPressed[key] = true
 	--put held down key logic here
+	if key == 'lshift' or key == 'rshift' then
+		love.keyboard.shift = true
+		print("Shift Pressed")
+	end
+end
 
+function love.keyreleased(key)
+	if key == 'lshift' or key == 'rshift' then
+		love.keyboard.shift = false
+		print("Shift Released")
+	end
 end
 
 --use for getting if key just pressed
