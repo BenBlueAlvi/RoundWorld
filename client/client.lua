@@ -51,7 +51,8 @@ end
 function Client:connect(pName)
 	
 	self.tcp:connect(self.host, self.port)
-	self.tcp:send('P{' .. pName .. '\n')
+	print("SHIPPP")
+	self:send('P{' .. pName .. '\n')
 	self.connected = true
 	coroutine.resume(self.receive)
 	--self.last = coroutine.status(self.receive)
@@ -87,7 +88,7 @@ end
 function Client:getCommand(id, greedy)
 		
 	--check for relevent data
-	print(self.data[1])
+	
 	if self.data[1] then
 		print('t:' .. string.sub(self.data[1], 1, 2))
 		print(id)

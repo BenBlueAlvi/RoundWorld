@@ -13,8 +13,8 @@ VIRTUAL_WIDTH = 432
 VIRTUAL_HEIGHT = 243
 
 
---CLIENT = Client("192.168.0.12", 7777)
-CLIENT = Client("127.0.0.1", 7777)
+CLIENT = Client("192.168.0.12", 7777)
+--CLIENT = Client("127.0.0.1", 7777)
 
 love.physics.setMeter(32)
 WORLD = love.physics.newWorld(0, 9.8 * 32, true) 
@@ -22,6 +22,7 @@ GAMEOBJS = {}
 PLAYER = nil
 
 PID = tostring(math.random(0, 1000))
+connTimer = 1
 
 function addGameObject(obj) 
 
@@ -136,6 +137,7 @@ function love.update(dt)
 	chat:update()
 	WORLD:update(dt)
 
+
 	
 	local pData = CLIENT:getCommand('P{', true)
 	
@@ -144,15 +146,21 @@ function love.update(dt)
 		chat:addMessage('player' .. pData .. 'joined the server!')
 	end
 	
-	if love.keyboard.wasPressed('a') then
+	if love.keyboard.wasPressed('a') and PLAYER then
 		PLAYER.body:setLinearVelocity(0, -100)
 		--CLIENT:conntest()
 		
 		
 	end
 	
-	if love.keyboard.wasPressed("d") then --set to whatever key you want to use
-		
+	
+	
+	if connTimer > 0 then --set to whatever key you want to use
+		connTimer = connTimer - dt
+		print(connTimer)
+		if connTimer <= 0 then
+			CLIENT:send('P{'.. PID ..'\n')
+		end
 	end
 	
 	
