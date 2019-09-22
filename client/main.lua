@@ -140,9 +140,7 @@ function love.update(dt)
 	chat:update()
 	WORLD:update(dt)
 	if PLAYER then
-		local x, y = PLAYER.body:getPosition()
-		local vx, vy = PLAYER.body:getLinearVelocity()
-		CLIENT:sendMPPosUpdate(PID, x, y, vx, vy, PLAYER.body:getAngle())
+		
 		
 		local MPPUdata = CLIENT:getCommand('MPPU', false)
 		if MPPUdata then
@@ -173,27 +171,31 @@ function love.update(dt)
 	if love.keyboard.wasPressed('a') and PLAYER then
 		PLAYER.body:setLinearVelocity(-100, 0)
 		--CLIENT:conntest()
+		local x, y = PLAYER.body:getPosition()
+		local vx, vy = PLAYER.body:getLinearVelocity()
+		CLIENT:sendMPPosUpdate(PID, x, y, vx, vy, PLAYER.body:getAngle())
 		
 		
-	end
-	if love.keyboard.wasPressed('d') and PLAYER then
+	elseif love.keyboard.wasPressed('d') and PLAYER then
 		PLAYER.body:setLinearVelocity(100, 0)
 		--CLIENT:conntest()
+		local x, y = PLAYER.body:getPosition()
+		local vx, vy = PLAYER.body:getLinearVelocity()
+		CLIENT:sendMPPosUpdate(PID, x, y, vx, vy, PLAYER.body:getAngle())
 		
-		
-	end
-	
-	if love.keyboard.wasPressed('w') and PLAYER then
+	elseif love.keyboard.wasPressed('w') and PLAYER then
 		PLAYER.body:setLinearVelocity(0, -100)
 		--CLIENT:conntest()
+		local x, y = PLAYER.body:getPosition()
+		local vx, vy = PLAYER.body:getLinearVelocity()
+		CLIENT:sendMPPosUpdate(PID, x, y, vx, vy, PLAYER.body:getAngle())
 		
-		
-	end
-	
-	if love.keyboard.wasPressed('s') and PLAYER then
+	elseif love.keyboard.wasPressed('s') and PLAYER then
 		PLAYER.body:setLinearVelocity(0, 100)
 		--CLIENT:conntest()
-		
+		local x, y = PLAYER.body:getPosition()
+		local vx, vy = PLAYER.body:getLinearVelocity()
+		CLIENT:sendMPPosUpdate(PID, x, y, vx, vy, PLAYER.body:getAngle())
 		
 	end
 	
