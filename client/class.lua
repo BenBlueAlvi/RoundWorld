@@ -72,7 +72,9 @@ local function new(class)
 	class.init    = class.init    or class[1] or function() end
 	class.include = class.include or include
 	class.clone   = class.clone   or clone
-
+	
+	print("penis")
+	
 	-- constructor call
 	return setmetatable(class, {__call = function(c, ...)
 		local o = setmetatable({}, c)
