@@ -18,8 +18,9 @@ CLIENT = Client("127.0.0.1", 7777)
 love.physics.setMeter(32)
 WORLD = love.physics.newWorld(0, 9.8 * 32, true) 
 GAMEOBJS = {}
+PLAYER = nil
 
-
+PID = tostring(math.random(0, 1000))
 
 function addGameObject(obj) 
 
@@ -28,6 +29,28 @@ function addGameObject(obj)
 end
 
 
+function buildPlayer(name)
+	print("building player" .. name)
+	player = GameObj("player" .. name)
+	player:addComponent(Component('physics', {
+		['x'] = 50,
+		['y'] = 50,
+		['shape'] = 'circle',
+		['radius'] = 5,
+		['density'] = 1,
+		['interaction'] = 'dynamic'
+		
+	}))
+	
+	player:addComponent(Component('renderable', {
+		['color'] = {255, 0, 255},
+		['isPoly'] = false
+	}))
+	addGameObject(player)
+	if name == PID then
+		PLAYER = player
+	end
+end
 
 function love.load()
 	love.keyboard.keysPressed = {}
@@ -47,26 +70,12 @@ function love.load()
 	
 	
 	
-	CLIENT:connect()
+	CLIENT:connect(PID)
 	
 	chat = Chat()
 	
 	
-	player = GameObj('player')
-	player:addComponent(Component('physics', {
-		['x'] = 50,
-		['y'] = 50,
-		['shape'] = 'circle',
-		['radius'] = 5,
-		['density'] = 1,
-		['interaction'] = 'dynamic'
-		
-	}))
 	
-	player:addComponent(Component('renderable', {
-		['color'] = {255, 0, 255},
-		['isPoly'] = false
-	}))
 	
 	ground = GameObj('ground')
 	
@@ -86,16 +95,27 @@ function love.load()
 		['isPoly'] = true
 	}))
 	
-	addGameObject(player)
+	
 	addGameObject(ground)
 
 
 end
 
+
 function love.keypressed(key)
 	love.keyboard.keysPressed[key] = true
 	--put held down key logic here
+	if key == 'lshift' or key == 'rshift' then
+		love.keyboard.shiftDown = true
+	end
+	
+	
+end
 
+function love.keyreleased(key)
+   if key == 'lshift' or key == 'rshift' then
+		love.keyboard.shiftDown = false
+	end
 end
 
 --use for getting if key just pressed
@@ -113,9 +133,16 @@ function love.update(dt)
 	CLIENT:update()
 	chat:update()
 	WORLD:update(dt)
+
+	
+	local pData = CLIENT:getCommand('P{', true)
+	
+	if pData then
+		buildPlayer(pData)
+	end
 	
 	if love.keyboard.wasPressed('a') then
-		GAMEOBJS[1].body:setLinearVelocity(0, -100)
+		PLAYER.body:setLinearVelocity(0, -100)
 		--CLIENT:conntest()
 		
 		

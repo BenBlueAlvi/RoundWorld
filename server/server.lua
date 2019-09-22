@@ -84,6 +84,7 @@ function clientThread (connection)
 		
 		if not status then 
 			
+			--Client processing goes here!
 			local n = table.getn(clients)
 			for i = 1, n do
 				print("SENDING to " .. i)
@@ -96,7 +97,7 @@ function clientThread (connection)
 			print("client count: " .. table.getn(clients))
 		end
 		
-		if s == '/close' then
+		if s == 'E{close' then
 			client:close()
 		end
 		coroutine.yield(connection)

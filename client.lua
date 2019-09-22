@@ -18,15 +18,17 @@ function Client:init(host, port)
 	self.receive = coroutine.create(function()
 		local i = 0
 		while true do
-			
+			--get data
 			local s, status, partial = self.tcp:receive()
 			if status == "closed" then 
+				--if closed, disconnect
 				self.connected = false
 				self.tcp:close()
 				coroutine.yield()
 				break
 			end
 			
+			--make sure it exisits
 			if s then 
 				print("got: " .. s)
 				table.insert(self.data, s) 
@@ -46,10 +48,10 @@ function Client:init(host, port)
 	
 end
 
-function Client:connect()
+function Client:connect(pName)
 	
 	self.tcp:connect(self.host, self.port)
-	self.tcp:send('HELLO OVER THERE\n')
+	self.tcp:send('P{' .. pName .. '\n')
 	self.connected = true
 	coroutine.resume(self.receive)
 	--self.last = coroutine.status(self.receive)
@@ -79,6 +81,25 @@ function Client:conntest()
 
 	
 	tcp:close()
+end
+
+--greedy gets remove data that doesn't match
+function Client:getCommand(id, greedy)
+		
+	--check for relevent data
+	print(self.data[1])
+	if self.data[1] then
+		print('t:' .. string.sub(self.data[1], 1, 2))
+		print(id)
+		if string.sub(self.data[1], 1, 2) == id then
+			return string.sub(table.remove(self.data, 1), 3)
+		elseif greedy then
+			table.remove(self.data, 1)
+		end
+		--TODO and chat limit
+	end
+	
+
 end
 
 
