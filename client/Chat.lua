@@ -65,3 +65,7 @@ function Chat:draw()
 	end
 	love.graphics.printf('>>>' .. self.typeLine, 0, VIRTUAL_HEIGHT - 10, VIRTUAL_WIDTH, 'right')
 end
+
+function Chat:addMessage(m)
+	table.insert(self.lines, '[' .. m .. ']')
+end

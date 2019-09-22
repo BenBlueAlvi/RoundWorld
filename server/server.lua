@@ -3,7 +3,7 @@ function connect()
 	-- load namespace
 	local socket = require("socket")
 	-- create a TCP socket and bind it to the local host, at any port
-	local server = assert(socket.bind("192.168.0.12", 7777))
+	local server = assert(socket.bind("*", 7777))
 	server:settimeout(0.1)
 	-- find out which port the OS chose for us
 	local ip, port = server:getsockname()
