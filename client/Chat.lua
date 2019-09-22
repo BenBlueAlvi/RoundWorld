@@ -10,12 +10,12 @@ end
 function Chat:update()
 	
 	--check for relevent data
-	if CLIENT.data[1] then
-		print(string.sub(CLIENT.data[1], 1, 2))
-		if string.sub(CLIENT.data[1], 1, 2) == "C{" then
-			table.insert(self.lines, string.sub(table.remove(CLIENT.data, 1), 3))
+	local chat = CLIENT:getCommand('chat', false)
+	if chat then
 		
-		end
+			table.insert(self.lines, chat['message'])
+		
+		
 		--TODO and chat limit
 	end
 	
@@ -47,7 +47,7 @@ function Chat:update()
 	
 	--send it
 	if love.keyboard.wasPressed('return') then
-		CLIENT:send("C{" .. self.typeLine)
+		CLIENT:sendChat(self.typeLine)
 		--clear typing line
 		self.typeLine = ""
 	end

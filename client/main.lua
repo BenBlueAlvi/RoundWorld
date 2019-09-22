@@ -17,7 +17,7 @@ CLIENT = Client("192.168.0.12", 7777)
 --CLIENT = Client("127.0.0.1", 7777)
 
 love.physics.setMeter(32)
-WORLD = love.physics.newWorld(0, 9.8 * 32, true) 
+WORLD = love.physics.newWorld(0, 0, true) 
 GAMEOBJS = {}
 PLAYER = nil
 
@@ -33,7 +33,7 @@ end
 
 function buildPlayer(name)
 	print("building player" .. name)
-	player = GameObj("player" .. name)
+	player = GameObj(name)
 	player:addComponent(Component('physics', {
 		['x'] = 50,
 		['y'] = 50,
@@ -58,6 +58,7 @@ function love.load()
 	love.keyboard.keysPressed = {}
 	love.window.setTitle("Round World")
 	math.randomseed(os.time())
+	PID = tostring(math.random(0, 1000))
 	
 	
 	--set up rendering and scaling filter
@@ -119,6 +120,8 @@ function love.keyreleased(key)
 		print("Shift Released")
 
 	end
+	
+	
 end
 
 --use for getting if key just pressed
@@ -136,18 +139,59 @@ function love.update(dt)
 	CLIENT:update()
 	chat:update()
 	WORLD:update(dt)
-
-
-	
-	local pData = CLIENT:getCommand('P{', true)
-	
-	if pData then
-		buildPlayer(pData)
-		chat:addMessage('player' .. pData .. 'joined the server!')
+	if PLAYER then
+		local x, y = PLAYER.body:getPosition()
+		local vx, vy = PLAYER.body:getLinearVelocity()
+		CLIENT:sendMPPosUpdate(PID, x, y, vx, vy, PLAYER.body:getAngle())
+		
+		local MPPUdata = CLIENT:getCommand('MPPU', false)
+		if MPPUdata then
+			for k, v in pairs(GAMEOBJS) do
+				if v.name == MPPUdata['PID'] and v.name ~= PID then
+					v.body:setX(MPPUdata['x'])
+					v.body:setY(MPPUdata['y'])
+					v.body:setLinearVelocity(MPPUdata['vx'], MPPUdata['vy'])
+					v.body:setAngle(MPPUdata['a'])
+				end
+			end
+		end
 	end
 	
+	
+	
+	local pData = CLIENT:getCommand('playerConnect', true)
+	
+	if pData then
+		buildPlayer(pData['PID'])
+		chat:addMessage('player' .. pData['PID'] .. 'joined the server!')
+	end
+	
+	
+
+	
+	
 	if love.keyboard.wasPressed('a') and PLAYER then
+		PLAYER.body:setLinearVelocity(-100, 0)
+		--CLIENT:conntest()
+		
+		
+	end
+	if love.keyboard.wasPressed('d') and PLAYER then
+		PLAYER.body:setLinearVelocity(100, 0)
+		--CLIENT:conntest()
+		
+		
+	end
+	
+	if love.keyboard.wasPressed('w') and PLAYER then
 		PLAYER.body:setLinearVelocity(0, -100)
+		--CLIENT:conntest()
+		
+		
+	end
+	
+	if love.keyboard.wasPressed('s') and PLAYER then
+		PLAYER.body:setLinearVelocity(0, 100)
 		--CLIENT:conntest()
 		
 		
@@ -159,7 +203,7 @@ function love.update(dt)
 		connTimer = connTimer - dt
 		print(connTimer)
 		if connTimer <= 0 then
-			CLIENT:send('P{'.. PID ..'\n')
+			CLIENT:sendPlayerConnect()
 		end
 	end
 	

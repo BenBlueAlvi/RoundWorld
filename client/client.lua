@@ -90,10 +90,10 @@ function Client:getCommand(id, greedy)
 	--check for relevent data
 	
 	if self.data[1] then
-		print('t:' .. string.sub(self.data[1], 1, 2))
-		print(id)
-		if string.sub(self.data[1], 1, 2) == id then
-			return string.sub(table.remove(self.data, 1), 3)
+		local jData = json.decode(self.data[1])
+		if jData['id'] == id then
+			table.remove(self.data, 1)
+			return jData
 		elseif greedy then
 			table.remove(self.data, 1)
 		end
@@ -102,6 +102,33 @@ function Client:getCommand(id, greedy)
 	
 
 end
+
+function Client:sendChat(message)	
+	local jData = {}
+	jData['id'] = 'chat'
+	jData['message'] = message
+	self:send(json.encode(jData))
+end
+
+function Client:sendPlayerConnect()	
+	local jData = {}
+	jData['id'] = 'playerConnect'
+	jData['PID'] = PID
+	self:send(json.encode(jData))
+end
+
+function Client:sendMPPosUpdate(pid, x, y, vx, vy, a)
+	local jData = {}
+	jData['id'] = 'MPPU'
+	jData['x'] = x
+	jData['y'] = y
+	jData['vx'] = vx
+	jData['vy'] = vy
+	jData['a'] = a
+	jData['PID'] = pid
+	self:send(json.encode(jData))
+end
+
 
 
 
