@@ -52,7 +52,6 @@ function Client:connect(pName)
 	
 	self.tcp:connect(self.host, self.port)
 	print("SHIPPP")
-	self:send('P{' .. pName .. '\n')
 	self.connected = true
 	coroutine.resume(self.receive)
 	--self.last = coroutine.status(self.receive)
