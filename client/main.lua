@@ -13,8 +13,8 @@ VIRTUAL_WIDTH = 432
 VIRTUAL_HEIGHT = 243
 
 
-CLIENT = Client("192.168.0.12", 7777)
---CLIENT = Client("127.0.0.1", 7777)
+--CLIENT = Client("192.168.0.12", 7777)
+CLIENT = Client("127.0.0.1", 7777)
 
 love.physics.setMeter(32)
 WORLD = love.physics.newWorld(0, 0, true) 

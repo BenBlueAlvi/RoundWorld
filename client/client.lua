@@ -35,6 +35,12 @@ function Client:init(host, port)
 				self.last = s
 			end
 			
+			if partial and partial ~= '' then
+				print("got: " .. partial)
+				table.insert(self.data, partial) 
+				self.last = partial
+			end
+			
 	
 			
 

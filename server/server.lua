@@ -29,40 +29,55 @@ end
 
 
 
-function receive (connection)
-	connection:settimeout(0.1)   -- do not block
-	local s, status = connection:receive()
+function receive (cn)
+	players[cn].conn:settimeout(0.1)   -- do not block
+	local s, status = players[cn].conn:receive()
+	
 	if status == "timeout" then
-		coroutine.yield(connection)
+		
+		coroutine.yield(cn)
 	end
 	return s, status
 end
 
 threads = {}    -- list of all live threads
-clients = {} -- allClients
-
+players = {}
+CLIENTN = 0
 function addClient(conn)
 	-- create coroutine
+	
+	CLIENTN = CLIENTN + 1
+	local cn = CLIENTN
+	
+	local mp = MPlayer(cn, conn)
+	
+	
+	table.insert(players, mp)
+	
 	local co = coroutine.create(function ()
-		clientThread(conn)
+		clientThread(cn)
 	end)
 	-- insert it in the list
 	table.insert(threads, co)
-	table.insert(clients, conn)
+	
+	
+	
+	
 end
 
 
 
 function dispatcher ()
-	while 1 do
+
 		local n = table.getn(threads)
-		if n == 0 then break end    -- no more threads to run
+		--if n == 0 then break end    -- no more threads to run
 		local connections = {}
 		for i=1,n do
 			local status, res = coroutine.resume(threads[i])
 			if not res and i ~= 1 then    -- thread finished its task?
 				table.remove(threads, i)
-				table.remove(clients, i-1)
+				table.remove(players, i-1)
+				CLIENTN = CLIENTN - 1
 				break
 			else    -- timeout
 				table.insert(connections, res)
@@ -72,23 +87,39 @@ function dispatcher ()
 			socket.select(connections)
 		end
 		
-	end
+	
 end
 
 
-function clientThread (connection)
+function clientThread (cn)
 	
     while true do
-	
-		local s, status = receive(connection)
+		
+		local s, status = receive(cn)
 		
 		if not status then 
-			
-			--Client processing goes here!
-			local n = table.getn(clients)
-			for i = 1, n do
-				print("SENDING to " .. i)
-				clients[i]:send(s .. "\n") 
+			local sData = json.decode(s)
+			if sData['id'] == 'playerConnect' then
+				print('connection recieved')
+				players[cn].PID = sData['PID']
+				for k, v in pairs(players) do
+					
+					local jData = {
+						['PID'] = v.PID,
+						['id'] = 'playerConnect'
+					}
+					
+					players[cn].conn:send(json.encode(jData) .. '\n')
+				end
+				
+			else
+			 
+				--Client processing goes here!
+				local n = table.getn(clients)
+				for i = 1, n do
+					print("SENDING to " .. i)
+					clients[i]:send(s .. "\n") 
+				end
 			end
 			
 		end
@@ -98,12 +129,12 @@ function clientThread (connection)
 		end
 		
 		if s == 'E{close' then
-			client:close()
+			players[cn].conn:close()
 		end
-		coroutine.yield(connection)
+		coroutine.yield(cn)
 		if status == "closed" then break end
     end
-    connection:close()
+    players[cn].conn:close()
 
 end
 
@@ -115,11 +146,4 @@ end
 
 
 
-local co = coroutine.create(function ()
-	connect()
-end)
--- insert it in the list
-table.insert(threads, co)
 
---start dispatcher
-dispatcher()
