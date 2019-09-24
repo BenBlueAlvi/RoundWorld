@@ -9,13 +9,14 @@ love.physics.setMeter(32)
 WORLD = love.physics.newWorld(0, 0, true) 
 
 
-worldObjs = {}
-function generateWorldObject()
+
+function generateWorldObject(x, y, radius)
 	local wo = {}
-	wo.body = love.physics.newBody(WORLD, comp.x, comp.y, 'dynamic')
-	wo.shape = love.physics.newCircleShape(comp.radius)
-	wo.fixture = love.physics.newFixture(self.body, self.shape, comp.density)
-	table.insert(worldObjs, wo)
+	wo.body = love.physics.newBody(WORLD, x, y, 'dynamic')
+	wo.shape = love.physics.newCircleShape(radius)
+	wo.fixture = love.physics.newFixture(wo.body, wo.shape, 1)
+	print('generated world object')
+	return wo
 
 end
 function love.load()

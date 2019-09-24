@@ -30,11 +30,11 @@ end
 
 
 function receive (cn)
-	players[cn].conn:settimeout(0.1)   -- do not block
+	players[cn].conn:settimeout(0)   -- do not block
 	local s, status = players[cn].conn:receive()
 	
 	if status == "timeout" then
-		
+		print('timeout')
 		coroutine.yield(cn)
 	end
 	return s, status
@@ -68,9 +68,12 @@ end
 
 
 function dispatcher ()
-
+	
 		local n = table.getn(threads)
-		--if n == 0 then break end    -- no more threads to run
+		if n == 0 then 
+			print('dispatcher halt')
+			 
+		end    -- no more threads to run
 		local connections = {}
 		for i=1,n do
 			local status, res = coroutine.resume(threads[i])
@@ -94,14 +97,17 @@ end
 function clientThread (cn)
 	
     while true do
-		
+		print('waiting...')
 		local s, status = receive(cn)
-		
+		print(s)
 		if not status then 
+			
 			local sData = json.decode(s)
+			print(sData['id'])
 			if sData['id'] == 'playerConnect' then
 				print('connection recieved')
 				players[cn].PID = sData['PID']
+				players[cn].wo = generateWorldObject(10, 10, 5)
 				for k, v in pairs(players) do
 					
 					local jData = {
@@ -112,6 +118,66 @@ function clientThread (cn)
 					players[cn].conn:send(json.encode(jData) .. '\n')
 				end
 				
+			elseif sData['id'] == 'MPPU' then
+				players[cn].wo.body:setX(sData['x'])
+				players[cn].wo.body:setY(sData['y'])
+				players[cn].wo.body:setLinearVelocity(sData['vx'], sData['vy'])
+				players[cn].wo.body:setAngle(sData['a'])
+			
+			
+			elseif sData['id'] == 'hb' then
+				print('hb')
+				for k, v in pairs(players) do
+					players[cn].conn:send(v:getWorldData() .. '\n')
+				end
+			
+			elseif sData['id'] == 'keydown' then
+			
+				--player movement
+				if sData['key'] == 'a' then
+					local x, y = players[cn].wo.body:getPosition()
+					local vx, vy = players[cn].wo.body:getLinearVelocity()
+					players[cn].wo.body:setLinearVelocity(vx - 100, vy)
+				elseif sData['key'] == 'd' then
+					local x, y = players[cn].wo.body:getPosition()
+					local vx, vy = players[cn].wo.body:getLinearVelocity()
+					players[cn].wo.body:setLinearVelocity(vx + 100, vy)
+				elseif sData['key'] == 'w' then
+					local x, y = players[cn].wo.body:getPosition()
+					local vx, vy = players[cn].wo.body:getLinearVelocity()
+					players[cn].wo.body:setLinearVelocity(vx, vy - 100)
+				elseif sData['key'] == 's' then
+					local x, y = players[cn].wo.body:getPosition()
+					local vx, vy = players[cn].wo.body:getLinearVelocity()
+					players[cn].wo.body:setLinearVelocity(vx, vy + 100)
+				end
+				
+			elseif sData['id'] == 'keyup' then
+			
+				--player movement
+				if sData['key'] == 'a' then
+					local x, y = players[cn].wo.body:getPosition()
+					local vx, vy = players[cn].wo.body:getLinearVelocity()
+					players[cn].wo.body:setLinearVelocity(vx + 100, vy)
+					
+				elseif sData['key'] == 'd' then
+					local x, y = players[cn].wo.body:getPosition()
+					local vx, vy = players[cn].wo.body:getLinearVelocity()
+					players[cn].wo.body:setLinearVelocity(vx - 100, vy)
+					
+				elseif sData['key'] == 'w' then
+					local x, y = players[cn].wo.body:getPosition()
+					local vx, vy = players[cn].wo.body:getLinearVelocity()
+					players[cn].wo.body:setLinearVelocity(vx, vy + 100)
+					
+				elseif sData['key'] == 's' then
+					
+					local x, y = players[cn].wo.body:getPosition()
+					local vx, vy = players[cn].wo.body:getLinearVelocity()
+					players[cn].wo.body:setLinearVelocity(vx, vy - 100)
+					
+				end
+			
 			else
 			 
 				--Client processing goes here!
@@ -123,16 +189,19 @@ function clientThread (cn)
 			end
 			
 		end
+	
+		
 		if s then
 			print(s)
-			print("client count: " .. table.getn(clients))
+			print("client count: " .. table.getn(players))
 		end
 		
 		if s == 'E{close' then
 			players[cn].conn:close()
 		end
-		coroutine.yield(cn)
+		
 		if status == "closed" then break end
+		coroutine.yield(cn)
     end
     players[cn].conn:close()
 
@@ -142,6 +211,7 @@ end
 function getClientThread(client)
 	return threads[client + 1]
 end
+
 
 
 

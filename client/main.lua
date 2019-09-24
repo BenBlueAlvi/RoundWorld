@@ -45,7 +45,7 @@ function buildPlayer(name)
 	}))
 	
 	player:addComponent(Component('renderable', {
-		['color'] = {255, 0, 255},
+		['color'] = {math.random(50, 255), math.random(50, 255), math.random(50, 255)},
 		['isPoly'] = false
 	}))
 	addGameObject(player)
@@ -100,7 +100,7 @@ function love.load()
 	
 	
 	addGameObject(ground)
-
+	tic = 0
 
 end
 
@@ -119,6 +119,23 @@ function love.keyreleased(key)
 		love.keyboard.shift = false
 		print("Shift Released")
 
+	elseif key == 'a' then
+		CLIENT:sendKeyUp('a')
+		
+	elseif key == 'd' then
+		CLIENT:sendKeyUp('d')
+		
+	elseif key == 'w' then
+		local x, y = PLAYER.body:getPosition()
+		local vx, vy = PLAYER.body:getLinearVelocity()
+		--CLIENT:sendMPPosUpdate(PID, x, y, vx, vy + 100, PLAYER.body:getAngle())
+		
+	elseif key	== 's' then
+		local x, y = PLAYER.body:getPosition()
+		local vx, vy = PLAYER.body:getLinearVelocity()
+		--CLIENT:sendMPPosUpdate(PID, x, y, vx , vy - 100, PLAYER.body:getAngle())
+	
+		
 	end
 	
 	
@@ -139,20 +156,28 @@ function love.update(dt)
 	CLIENT:update()
 	chat:update()
 	WORLD:update(dt)
+	tic = dt + tic
 	if PLAYER then
 		
+		if tic > 0.06 then
+			CLIENT:sendHB()
+			tic = 0
+		end
 		
+		--get pos data from server
 		local MPPUdata = CLIENT:getCommand('MPPU', false)
 		if MPPUdata then
 			for k, v in pairs(GAMEOBJS) do
-				if v.name == MPPUdata['PID'] and v.name ~= PID then
+				if v.name == MPPUdata['PID'] then
 					v.body:setX(MPPUdata['x'])
 					v.body:setY(MPPUdata['y'])
-					v.body:setLinearVelocity(MPPUdata['vx'], MPPUdata['vy'])
+					--v.body:setLinearVelocity(MPPUdata['vx'], MPPUdata['vy'])
 					v.body:setAngle(MPPUdata['a'])
 				end
 			end
 		end
+		
+		
 	end
 	
 	
@@ -169,33 +194,24 @@ function love.update(dt)
 	
 	
 	if love.keyboard.wasPressed('a') and PLAYER then
-		PLAYER.body:setLinearVelocity(-100, 0)
-		--CLIENT:conntest()
-		local x, y = PLAYER.body:getPosition()
-		local vx, vy = PLAYER.body:getLinearVelocity()
-		CLIENT:sendMPPosUpdate(PID, x, y, vx, vy, PLAYER.body:getAngle())
+		
+		CLIENT:sendKeyDown('a')
 		
 		
 	elseif love.keyboard.wasPressed('d') and PLAYER then
-		PLAYER.body:setLinearVelocity(100, 0)
+		
 		--CLIENT:conntest()
-		local x, y = PLAYER.body:getPosition()
-		local vx, vy = PLAYER.body:getLinearVelocity()
-		CLIENT:sendMPPosUpdate(PID, x, y, vx, vy, PLAYER.body:getAngle())
+		CLIENT:sendKeyDown('d')
 		
 	elseif love.keyboard.wasPressed('w') and PLAYER then
-		PLAYER.body:setLinearVelocity(0, -100)
-		--CLIENT:conntest()
-		local x, y = PLAYER.body:getPosition()
-		local vx, vy = PLAYER.body:getLinearVelocity()
-		CLIENT:sendMPPosUpdate(PID, x, y, vx, vy, PLAYER.body:getAngle())
+		CLIENT:sendKeyDown('w')
+		
 		
 	elseif love.keyboard.wasPressed('s') and PLAYER then
-		PLAYER.body:setLinearVelocity(0, 100)
+		CLIENT:sendKeyDown('s')
 		--CLIENT:conntest()
-		local x, y = PLAYER.body:getPosition()
-		local vx, vy = PLAYER.body:getLinearVelocity()
-		CLIENT:sendMPPosUpdate(PID, x, y, vx, vy, PLAYER.body:getAngle())
+	
+		
 		
 	end
 	

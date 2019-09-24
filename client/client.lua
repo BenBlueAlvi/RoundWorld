@@ -125,18 +125,37 @@ end
 function Client:sendMPPosUpdate(pid, x, y, vx, vy, a)
 	local jData = {}
 	jData['id'] = 'MPPU'
-	jData['x'] = x
-	jData['y'] = y
+	jData['x'] = math.floor(x)
+	jData['y'] = math.floor(y)
 	jData['vx'] = vx
 	jData['vy'] = vy
 	jData['a'] = a
 	jData['PID'] = pid
+
 	self:send(json.encode(jData))
 end
 
 
 
+function Client:sendHB()
+	local jData = {}
+	jData['id'] = 'hb'
+	self:send(json.encode(jData))
+end
 
+function Client:sendKeyDown(key)
+	local jData = {}
+	jData['id'] = 'keydown'
+	jData['key'] = key
+	self:send(json.encode(jData))
+end
+
+function Client:sendKeyUp(key)
+	local jData = {}
+	jData['id'] = 'keyup'
+	jData['key'] = key
+	self:send(json.encode(jData))
+end
 
 
 
