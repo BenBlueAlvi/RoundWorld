@@ -5,6 +5,7 @@ require 'Component'
 require 'GameObj'
 require 'client'
 require 'Chat'
+require 'ActionSystem'
 
 WINDOW_HEIGHT = 720
 WINDOW_WIDTH = 1280
@@ -120,16 +121,16 @@ function love.keyreleased(key)
 		print("Shift Released")
 
 	elseif key == 'a' then
-		CLIENT:sendKeyUp('a')
+		CLIENT:sendActionEnd(3)
 		
 	elseif key == 'd' then
-		CLIENT:sendKeyUp('d')
+		CLIENT:sendActionEnd(1)
 		
 	elseif key == 'w' then
-		CLIENT:sendKeyUp('w')
+		CLIENT:sendActionEnd(0)
 		
 	elseif key	== 's' then
-		CLIENT:sendKeyUp('s')
+		CLIENT:sendActionEnd(2)
 	
 		
 	end
@@ -163,19 +164,9 @@ function love.update(dt)
 		end
 		
 		--get pos data from server
-		local MPPUdata = CLIENT:getCommand('MPPU', false)
-		if MPPUdata then
-			for k, v in pairs(GAMEOBJS) do
-				if v.name == MPPUdata['PID'] then
-					v.body:setX(MPPUdata['x'])
-					v.body:setY(MPPUdata['y'])
-					--v.body:setLinearVelocity(MPPUdata['vx'], MPPUdata['vy'])
-					v.body:setAngle(MPPUdata['a'])
-				end
-			end
-		end
+	
 		
-		
+		ActionSystem()
 	end
 	
 	
@@ -193,20 +184,20 @@ function love.update(dt)
 	
 	if love.keyboard.wasPressed('a') and PLAYER then
 		
-		CLIENT:sendKeyDown('a')
+		CLIENT:sendActionStart(3)
 		
 		
 	elseif love.keyboard.wasPressed('d') and PLAYER then
 		
 		
-		CLIENT:sendKeyDown('d')
+		CLIENT:sendActionStart(1)
 		
 	elseif love.keyboard.wasPressed('w') and PLAYER then
-		CLIENT:sendKeyDown('w')
+		CLIENT:sendActionStart(0)
 		
 		
 	elseif love.keyboard.wasPressed('s') and PLAYER then
-		CLIENT:sendKeyDown('s')
+		CLIENT:sendActionStart(2)
 		
 	
 		
