@@ -1,4 +1,5 @@
 function ActionSystem()
+		
 		local actionStart = CLIENT:getCommand('actS', false)
 		if actionStart then
 			for k, v in pairs(GAMEOBJS) do
@@ -11,7 +12,7 @@ function ActionSystem()
 		local actionEnd = CLIENT:getCommand('actE', false)
 		if actionEnd then
 			for k, v in pairs(GAMEOBJS) do
-				if v.name == actionStart['PID'] then
+				if v.name == actionEnd['PID'] then
 					movementEnd(actionEnd, v)
 						
 				end

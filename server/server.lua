@@ -132,7 +132,7 @@ function clientThread (cn)
 			 
 				--Client processing goes here!
 				for k, v in pairs(players) do	
-					players[cn].conn:send(s.. '\n')
+					v.conn:send(s.. '\n')
 				end
 			end
 			

@@ -163,7 +163,7 @@ function Client:sendActionStart(id)
 	local jData = {}
 	jData['id'] = 'actS'
 	jData['aid'] = id
-	jData['PID'] = pid
+	jData['PID'] = PID
 	self:send(json.encode(jData))
 end
 
@@ -171,7 +171,7 @@ function Client:sendActionEnd(id)
 	local jData = {}
 	jData['id'] = 'actE'
 	jData['aid'] = id
-	jData['PID'] = pid
+	jData['PID'] = PID
 	self:send(json.encode(jData))
 end
 
