@@ -126,14 +126,10 @@ function love.keyreleased(key)
 		CLIENT:sendKeyUp('d')
 		
 	elseif key == 'w' then
-		local x, y = PLAYER.body:getPosition()
-		local vx, vy = PLAYER.body:getLinearVelocity()
-		--CLIENT:sendMPPosUpdate(PID, x, y, vx, vy + 100, PLAYER.body:getAngle())
+		CLIENT:sendKeyUp('w')
 		
 	elseif key	== 's' then
-		local x, y = PLAYER.body:getPosition()
-		local vx, vy = PLAYER.body:getLinearVelocity()
-		--CLIENT:sendMPPosUpdate(PID, x, y, vx , vy - 100, PLAYER.body:getAngle())
+		CLIENT:sendKeyUp('s')
 	
 		
 	end
@@ -202,7 +198,7 @@ function love.update(dt)
 		
 	elseif love.keyboard.wasPressed('d') and PLAYER then
 		
-		--CLIENT:conntest()
+		
 		CLIENT:sendKeyDown('d')
 		
 	elseif love.keyboard.wasPressed('w') and PLAYER then
@@ -211,7 +207,7 @@ function love.update(dt)
 		
 	elseif love.keyboard.wasPressed('s') and PLAYER then
 		CLIENT:sendKeyDown('s')
-		--CLIENT:conntest()
+		
 	
 		
 		
