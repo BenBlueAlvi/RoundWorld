@@ -97,7 +97,8 @@ function Chat:update()
 	end
 	
 	--send it
-	if love.keyboard.wasPressed('return') then
+	if love.keyboard.wasPressed('return') and string.len(self.typeLine) > 0 then
+		print(self.typeLine)
 		CLIENT:sendChat(self.typeLine)
 		--clear typing line
 		self.typeLine = ""
