@@ -108,7 +108,9 @@ function Client:getCommand(id, greedy)
 
 end
 
-function Client:sendChat(message)	
+function Client:sendChat(message)
+	print("Sending Chat message")
+	print(message)
 	local jData = {}
 	jData['id'] = 'chat'
 	jData['message'] = message

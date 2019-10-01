@@ -158,11 +158,6 @@ function love.update(dt)
 	--player heartbeats
 	if PLAYER then
 		
-		if tic > 0.06 then
-			CLIENT:sendHB()
-			tic = 0
-		end
-		
 		--get pos data from server
 	
 		

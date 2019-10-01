@@ -128,43 +128,11 @@ function clientThread (cn)
 			elseif sData['id'] == 'hb' then
 				--todo
 			
-			elseif sData['id'] == 'keydown' then
-			
-				--player movement
-				if sData['key'] == 'a' then
-					--todo
-				elseif sData['key'] == 'd' then
-					--todo
-				elseif sData['key'] == 'w' then
-					--todo
-				elseif sData['key'] == 's' then
-					--todo
-				end
-				
-			elseif sData['id'] == 'keyup' then
-			
-				--player movement
-				if sData['key'] == 'a' then
-					--todo
-				elseif sData['key'] == 'd' then
-					--todo
-					
-				elseif sData['key'] == 'w' then
-					--todo
-					
-				elseif sData['key'] == 's' then
-					
-					--tdo
-					
-				end
-			
 			else
 			 
 				--Client processing goes here!
-				local n = table.getn(clients)
-				for i = 1, n do
-					print("SENDING to " .. i)
-					clients[i]:send(s .. "\n") 
+				for k, v in pairs(players) do	
+					players[cn].conn:send(s.. '\n')
 				end
 			end
 			
