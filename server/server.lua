@@ -111,7 +111,6 @@ function clientThread (cn)
 			if sData['id'] == 'playerConnect' then
 				print('connection recieved')
 				players[cn].PID = sData['PID']
-				players[cn].wo = generateWorldObject(10, 10, 5)
 				for k, v in pairs(players) do
 					
 					local jData = {
@@ -123,62 +122,39 @@ function clientThread (cn)
 				end
 			--data checks
 			elseif sData['id'] == 'MPPU' then
-				players[cn].wo.body:setX(sData['x'])
-				players[cn].wo.body:setY(sData['y'])
-				players[cn].wo.body:setLinearVelocity(sData['vx'], sData['vy'])
-				players[cn].wo.body:setAngle(sData['a'])
+				--todo
 			
 			
 			elseif sData['id'] == 'hb' then
-				print('hb')
-				for k, v in pairs(players) do
-					players[cn].conn:send(v:getWorldData() .. '\n')
-				end
+				--todo
 			
 			elseif sData['id'] == 'keydown' then
 			
 				--player movement
 				if sData['key'] == 'a' then
-					local x, y = players[cn].wo.body:getPosition()
-					local vx, vy = players[cn].wo.body:getLinearVelocity()
-					players[cn].wo.body:setLinearVelocity(vx - 100, vy)
+					--todo
 				elseif sData['key'] == 'd' then
-					local x, y = players[cn].wo.body:getPosition()
-					local vx, vy = players[cn].wo.body:getLinearVelocity()
-					players[cn].wo.body:setLinearVelocity(vx + 100, vy)
+					--todo
 				elseif sData['key'] == 'w' then
-					local x, y = players[cn].wo.body:getPosition()
-					local vx, vy = players[cn].wo.body:getLinearVelocity()
-					players[cn].wo.body:setLinearVelocity(vx, vy - 100)
+					--todo
 				elseif sData['key'] == 's' then
-					local x, y = players[cn].wo.body:getPosition()
-					local vx, vy = players[cn].wo.body:getLinearVelocity()
-					players[cn].wo.body:setLinearVelocity(vx, vy + 100)
+					--todo
 				end
 				
 			elseif sData['id'] == 'keyup' then
 			
 				--player movement
 				if sData['key'] == 'a' then
-					local x, y = players[cn].wo.body:getPosition()
-					local vx, vy = players[cn].wo.body:getLinearVelocity()
-					players[cn].wo.body:setLinearVelocity(vx + 100, vy)
-					
+					--todo
 				elseif sData['key'] == 'd' then
-					local x, y = players[cn].wo.body:getPosition()
-					local vx, vy = players[cn].wo.body:getLinearVelocity()
-					players[cn].wo.body:setLinearVelocity(vx - 100, vy)
+					--todo
 					
 				elseif sData['key'] == 'w' then
-					local x, y = players[cn].wo.body:getPosition()
-					local vx, vy = players[cn].wo.body:getLinearVelocity()
-					players[cn].wo.body:setLinearVelocity(vx, vy + 100)
+					--todo
 					
 				elseif sData['key'] == 's' then
 					
-					local x, y = players[cn].wo.body:getPosition()
-					local vx, vy = players[cn].wo.body:getLinearVelocity()
-					players[cn].wo.body:setLinearVelocity(vx, vy - 100)
+					--tdo
 					
 				end
 			
