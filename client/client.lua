@@ -175,4 +175,13 @@ function Client:sendActionEnd(id)
 	self:send(json.encode(jData))
 end
 
+function Client:sendPos()
+	local jData = {}
+	jData['id'] = 'pos'
+	jData['x'] = PLAYER.body:getX()
+	jData['y'] = PLAYER.body:getY()
+	jData['PID'] = PID
+	self:send(json.encode(jData))
+end
+
 

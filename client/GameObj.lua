@@ -24,7 +24,8 @@ function GameObj:addComponent(comp)
 		end	
 		
 		self.fixture = love.physics.newFixture(self.body, self.shape, comp.density)
-		
+		self.fixture:setRestitution(0)
+		self.fixture:setFriction(0.5)
 		
 		
 	elseif comp.t == 'renderable' then

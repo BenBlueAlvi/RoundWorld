@@ -36,7 +36,7 @@ function receive (cn)
 	local s, status = players[cn].conn:receive()
 	
 	if status == "timeout" then
-		print('timeout')
+		
 		coroutine.yield(cn)
 	end
 	return s, status
@@ -100,29 +100,58 @@ end
 function clientThread (cn)
 	
     while true do
-		print('waiting...')
+		
 		local s, status = receive(cn)
-		print(s)
+		
 		if not status then 
 			
 			--decode data
 			local sData = json.decode(s)
-			print(sData['id'])
+			
 			if sData['id'] == 'playerConnect' then
 				print('connection recieved')
 				players[cn].PID = sData['PID']
 				for k, v in pairs(players) do
 					
 					local jData = {
-						['PID'] = v.PID,
-						['id'] = 'playerConnect'
+						['PID'] = players[cn].PID,
+						['id'] = 'playerConnect',
+						['chunk'] = players[cn].chunk
 					}
-					
-					players[cn].conn:send(json.encode(jData) .. '\n')
+					if v.chunk == players[cn].chunk then
+						v.conn:send(json.encode(jData) .. '\n')
+						if v.PID ~= players[cn].PID then
+							local jData = {
+								['id'] = 'getPos'
+							}
+						
+							players[cn].conn:send(json.encode(jData) .. '\n')
+						end
+					end
 				end
-			--data checks
-			elseif sData['id'] == 'MPPU' then
-				--todo
+				
+			
+				
+				
+			--get position
+			elseif sData['id'] == 'pos' then
+				for k, v in pairs(players) do
+					--check for revlevent chunk
+					if v.chunk == players[cn].chunk then
+						--check to make sure we aren't double spawning
+						if v.PID ~= players[cn].PID then
+						--spawn player
+							local jData = {
+								['id'] = 'plaSpawn',
+								['x'] = sData['x'],
+								['y'] = sData['y'],
+								['PID'] = sData['PID']
+							}
+						
+							players[cn].conn:send(json.encode(jData) .. '\n')
+						end
+					end	
+				end
 			
 			
 			elseif sData['id'] == 'hb' then
@@ -139,10 +168,7 @@ function clientThread (cn)
 		end
 	
 		
-		if s then
-			print(s)
-			print("client count: " .. table.getn(players))
-		end
+		
 		
 		if s == 'E{close' then
 			players[cn].conn:close()

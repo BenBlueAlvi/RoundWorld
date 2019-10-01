@@ -53,6 +53,7 @@ function buildPlayer(name)
 	if name == PID then
 		PLAYER = player
 	end
+	return player
 end
 
 function love.load()
@@ -162,10 +163,26 @@ function love.update(dt)
 	
 		
 		ActionSystem()
+		
+		
+		local sData = CLIENT:getCommand('getPos', false)
+	
+		if sData then
+			CLIENT:sendPos()
+		end
 	end
 	
 	
+	
 	--check for player
+	local pData = CLIENT:getCommand('plaSpawn', false)
+	
+	if pData then
+		buildPlayer(pData['PID']):setPosition(pData['x'], pData['y'])
+		chat:addMessage('player' .. pData['PID'] .. 'joined the server!')
+	end
+	
+	
 	local pData = CLIENT:getCommand('playerConnect', true)
 	
 	if pData then
