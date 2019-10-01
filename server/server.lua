@@ -1,4 +1,6 @@
-
+json = require 'json'
+Class = require 'class'
+require 'MPlayer'
 function connect()
 	-- load namespace
 	local socket = require("socket")
@@ -50,7 +52,7 @@ function addClient(conn)
 	local cn = CLIENTN
 	
 	local mp = MPlayer(cn, conn)
-	
+	print('building thread')
 	
 	table.insert(players, mp)
 	
@@ -68,7 +70,8 @@ end
 
 
 function dispatcher ()
-	
+	while 1 do
+		
 		local n = table.getn(threads)
 		if n == 0 then 
 			print('dispatcher halt')
@@ -89,7 +92,7 @@ function dispatcher ()
 		if table.getn(connections) == n then
 			socket.select(connections)
 		end
-		
+	end
 	
 end
 
@@ -102,6 +105,7 @@ function clientThread (cn)
 		print(s)
 		if not status then 
 			
+			--decode data
 			local sData = json.decode(s)
 			print(sData['id'])
 			if sData['id'] == 'playerConnect' then
@@ -117,7 +121,7 @@ function clientThread (cn)
 					
 					players[cn].conn:send(json.encode(jData) .. '\n')
 				end
-				
+			--data checks
 			elseif sData['id'] == 'MPPU' then
 				players[cn].wo.body:setX(sData['x'])
 				players[cn].wo.body:setY(sData['y'])
@@ -212,8 +216,13 @@ function getClientThread(client)
 	return threads[client + 1]
 end
 
+local co = coroutine.create(function ()
+		connect()
+	end)
+-- insert it in the list
+table.insert(threads, co)
+coroutine.resume(co)
 
-
-
+dispatcher()
 
 

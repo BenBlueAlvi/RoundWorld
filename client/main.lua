@@ -157,6 +157,8 @@ function love.update(dt)
 	chat:update()
 	WORLD:update(dt)
 	tic = dt + tic
+	
+	--player heartbeats
 	if PLAYER then
 		
 		if tic > 0.06 then
@@ -181,7 +183,7 @@ function love.update(dt)
 	end
 	
 	
-	
+	--check for player
 	local pData = CLIENT:getCommand('playerConnect', true)
 	
 	if pData then
